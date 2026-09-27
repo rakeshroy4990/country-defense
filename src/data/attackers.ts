@@ -18,7 +18,7 @@ export const ATTACKERS: Record<string, AttackerDef> = {
     kingdomDamage: 1,
     reward: 10,
     color: 0x6b6e72,
-    scale: 1.15,
+    scale: 1.55,
   },
   barricade: {
     id: 'barricade',
@@ -28,7 +28,7 @@ export const ATTACKERS: Record<string, AttackerDef> = {
     kingdomDamage: 2,
     reward: 14,
     color: 0x1f3a68,
-    scale: 1.3,
+    scale: 1.75,
   },
   bonecrusher: {
     id: 'bonecrusher',
@@ -38,7 +38,7 @@ export const ATTACKERS: Record<string, AttackerDef> = {
     kingdomDamage: 3,
     reward: 18,
     color: 0x6a5a28,
-    scale: 1.55,
+    scale: 2.05,
   },
   shockwave: {
     id: 'shockwave',
@@ -48,7 +48,7 @@ export const ATTACKERS: Record<string, AttackerDef> = {
     kingdomDamage: 3,
     reward: 22,
     color: 0x3d2458,
-    scale: 1.45,
+    scale: 1.95,
   },
   megatron: {
     id: 'megatron',
@@ -58,7 +58,7 @@ export const ATTACKERS: Record<string, AttackerDef> = {
     kingdomDamage: 5,
     reward: 36,
     color: 0x4a4e52,
-    scale: 1.85,
+    scale: 2.45,
   },
 };
 
