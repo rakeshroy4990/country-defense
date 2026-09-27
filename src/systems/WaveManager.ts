@@ -118,7 +118,10 @@ export class WaveManager {
       rt.spawnAcc += delta * 1000;
       while (rt.spawned < rt.config.count && rt.spawnAcc >= rt.config.spawnIntervalMs) {
         rt.spawnAcc -= rt.config.spawnIntervalMs;
-        const enemy = new Enemy(attackerById(rt.config.attackerId));
+        const def = attackerById(rt.config.attackerId);
+        const enemy = new Enemy(def);
+        const scale = this.levels[this.levelIndex]?.speedScale ?? 1;
+        enemy.speed = def.speed * scale;
         enemy.update(0, this.path, this.pathLength);
         this.scene.add(enemy.mesh);
         this.enemies.push(enemy);

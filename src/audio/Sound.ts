@@ -1,7 +1,7 @@
 /**
  * Placeholder tones until real files are dropped in /public/sfx.
  * TODO freesound.org swaps:
- *  - shoot: "cannon shot short"
+ *  - shoot: "rifle crack short"
  *  - death: "small explosion cartoon"
  *  - leak: "impact thud dull"
  */

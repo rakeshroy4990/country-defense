@@ -1,4 +1,4 @@
-export type TowerKind = 'cannon' | 'flak';
+export type TowerKind = 'ak47' | 'apache';
 
 export interface TowerDef {
   kind: TowerKind;
@@ -11,23 +11,23 @@ export interface TowerDef {
 }
 
 export const TOWER_DEFS: Record<TowerKind, TowerDef> = {
-  cannon: {
-    kind: 'cannon',
-    name: 'Cannon',
+  ak47: {
+    kind: 'ak47',
+    name: 'AK-47',
     cost: 40,
     range: 22,
     damage: 8,
-    fireRateMs: 900,
-    color: 0x4a4e48,
+    fireRateMs: 280,
+    color: 0x3f4638,
   },
-  flak: {
-    kind: 'flak',
-    name: 'Flak',
-    cost: 70,
-    range: 32,
-    damage: 4,
-    fireRateMs: 380,
-    color: 0x3f4538,
+  apache: {
+    kind: 'apache',
+    name: 'Apache Helicopter',
+    cost: 90,
+    range: 38,
+    damage: 12,
+    fireRateMs: 520,
+    color: 0x4a4a3a,
   },
 };
 

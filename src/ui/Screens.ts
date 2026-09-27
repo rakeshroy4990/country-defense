@@ -12,7 +12,7 @@ export class Screens {
   ) {
     this.menu = overlay(
       'Country Defense',
-      'Five levels. Starscream, Barricade, Bonecrusher, Shockwave, then Megatron. Left-click grass to build. Kingdom hits are recorded.',
+      'Five levels, starting slow then speeding up. Place an AK-47 or Apache Helicopter. Kingdom hits are recorded.',
       'Start',
       handlers.onStart,
     );

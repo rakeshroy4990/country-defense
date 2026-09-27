@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import type { TowerDef, TowerKind } from '../data/towers.ts';
-import { makeTurret, turretMuzzle } from '../models/turret.ts';
+import { makeWeapon, spinWeapon, weaponMuzzle } from '../models/weapons.ts';
 import type { Enemy } from './Enemy.ts';
 import { Projectile } from './Projectile.ts';
 
@@ -22,7 +22,7 @@ export class Tower {
     this.cellKey = cellKey;
     this.mesh = new THREE.Group();
     this.mesh.position.set(x, 0, z);
-    this.mesh.add(makeTurret(def.color));
+    this.mesh.add(makeWeapon(def.kind));
     this.mesh.userData.tower = true;
   }
 
@@ -38,6 +38,7 @@ export class Tower {
   }
 
   update(delta: number, enemies: readonly Enemy[]): Projectile | null {
+    spinWeapon(this.mesh, delta);
     this.cooldown = Math.max(0, this.cooldown - delta * 1000);
     if (this.cooldown > 0) {
       return null;
@@ -48,7 +49,7 @@ export class Tower {
     }
     this.cooldown = this.fireRateMs;
     this.mesh.lookAt(target.mesh.position.x, this.mesh.position.y, target.mesh.position.z);
-    const from = this.mesh.localToWorld(turretMuzzle());
+    const from = this.mesh.localToWorld(weaponMuzzle(this.kind));
     const aim = target.mesh.position.clone().setY(1.8);
     return new Projectile(from, aim, this.damage, target);
   }

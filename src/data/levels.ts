@@ -8,6 +8,7 @@ export interface LevelWave {
 export interface LevelConfig {
   id: number;
   name: string;
+  speedScale: number;
   waves: LevelWave[];
 }
 
@@ -22,11 +23,13 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 1,
     name: 'Sky Raid',
-    waves: [{ attackerId: 'starscream', count: 6, spawnIntervalMs: 750, startAtMs: 0 }],
+    speedScale: 0.4,
+    waves: [{ attackerId: 'starscream', count: 6, spawnIntervalMs: 1800, startAtMs: 0 }],
   },
   {
     id: 2,
     name: 'Street Sweep',
+    speedScale: 0.62,
     waves: [
       { attackerId: 'starscream', count: 4, spawnIntervalMs: 700, startAtMs: 0 },
       { attackerId: 'barricade', count: 5, spawnIntervalMs: 900, startAtMs: 6000 },
@@ -35,6 +38,7 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 3,
     name: 'Wrecking Crew',
+    speedScale: 0.85,
     waves: [
       { attackerId: 'barricade', count: 5, spawnIntervalMs: 800, startAtMs: 0 },
       { attackerId: 'bonecrusher', count: 4, spawnIntervalMs: 1400, startAtMs: 8000 },
@@ -43,6 +47,7 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 4,
     name: 'Purple Pulse',
+    speedScale: 1.15,
     waves: [
       { attackerId: 'starscream', count: 6, spawnIntervalMs: 650, startAtMs: 0 },
       { attackerId: 'shockwave', count: 3, spawnIntervalMs: 1600, startAtMs: 7000 },
@@ -51,6 +56,7 @@ export const LEVELS: LevelConfig[] = [
   {
     id: 5,
     name: 'Megatron Falls',
+    speedScale: 1.45,
     waves: [
       { attackerId: 'barricade', count: 6, spawnIntervalMs: 750, startAtMs: 0 },
       { attackerId: 'bonecrusher', count: 3, spawnIntervalMs: 1200, startAtMs: 8000 },

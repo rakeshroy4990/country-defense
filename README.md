@@ -26,7 +26,7 @@ Static output lands in `dist/`.
 
 Five levels of named attackers (Starscream → Megatron). Kingdom hits are listed in the damage log.
 
-1. Choose **Cannon** or **Flak** and click grass to build.
+1. Choose **AK-47** or **Apache Helicopter** and click grass to build. Early levels crawl; later levels speed up.
 2. Click a placed tower to upgrade it.
 3. If an attacker reaches the capital, the log records their name and damage. Esc or P pauses.
 

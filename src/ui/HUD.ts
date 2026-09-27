@@ -63,7 +63,7 @@ export class HUD {
       if (this.focused) this.onUpgrade(this.focused);
     });
     this.mountButtons();
-    this.setSelected('cannon');
+    this.setSelected('ak47');
   }
 
   update(

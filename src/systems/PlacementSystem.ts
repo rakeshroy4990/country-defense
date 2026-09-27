@@ -7,7 +7,7 @@ import type { Economy } from './Economy.ts';
 import { inMap, keyOf, snap } from './grid.ts';
 
 export class PlacementSystem {
-  selected: TowerKind = 'cannon';
+  selected: TowerKind = 'ak47';
   enabled = false;
   onSelectTower: ((tower: Tower | null) => void) | null = null;
   readonly towers: Tower[] = [];
