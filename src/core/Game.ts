@@ -6,7 +6,7 @@ import { FxSystem } from '../fx/FxSystem.ts';
 import { CombatSystem } from '../systems/CombatSystem.ts';
 import { Economy } from '../systems/Economy.ts';
 import { PlacementSystem } from '../systems/PlacementSystem.ts';
-import { formatBest, loadBest, recordBest } from '../systems/Score.ts';
+import { formatBest, recordBest } from '../systems/Score.ts';
 import { WaveManager } from '../systems/WaveManager.ts';
 import { HUD } from '../ui/HUD.ts';
 import { Screens } from '../ui/Screens.ts';
@@ -65,8 +65,8 @@ export class Game {
     this.placement.onSelectTower = (tower) => this.hud.setFocused(tower);
     this.combat = new CombatSystem(this.scene.scene, () => this.sound.shoot(), (at) => this.fx.spawn(at, 0xffd27a));
     bindPause(() => this.togglePause());
-    this.hud.setVisible(false);
-    this.screens.showMenu(formatBest(loadBest()));
+    host.addEventListener('pointerdown', () => this.sound.unlock(), { once: true });
+    this.beginMatch();
     requestAnimationFrame(this.tick);
   }
 

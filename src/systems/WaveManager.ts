@@ -1,5 +1,5 @@
 import type * as THREE from 'three';
-import { TEST_WAVES, type WaveConfig } from '../data/waves.ts';
+import { TEST_WAVES, type WaveConfig, type WaveRuntime } from '../data/waves.ts';
 import { Enemy } from '../entities/Enemy.ts';
 
 export interface WaveCallbacks {
@@ -15,10 +15,9 @@ const BASE_SPEED = 11;
 
 export class WaveManager {
   readonly enemies: Enemy[] = [];
-  private waveIndex = -1;
-  private spawned = 0;
-  private spawnAcc = 0;
+  private elapsed = 0;
   private running = false;
+  private runtimes: WaveRuntime[] = [];
   private readonly scene: THREE.Scene;
   private readonly path: THREE.CatmullRomCurve3;
   private readonly pathLength: number;
@@ -39,78 +38,82 @@ export class WaveManager {
     this.waves = waves;
   }
 
-  get currentWave(): number { return Math.max(1, this.waveIndex + 1); }
+  get currentWave(): number {
+    const started = this.runtimes.filter((rt) => rt.started).length;
+    return Math.max(1, started);
+  }
 
   get totalWaves(): number { return this.waves.length; }
 
   get enemiesRemaining(): number {
-    const wave = this.waves[this.waveIndex];
-    return wave ? wave.count - this.spawned + this.enemies.length : 0;
+    const pending = this.runtimes.reduce((n, rt) => n + (rt.config.count - rt.spawned), 0);
+    return pending + this.enemies.length;
   }
 
   get waveProgress(): number {
-    const wave = this.waves[this.waveIndex];
-    return wave ? 1 - this.enemiesRemaining / wave.count : 0;
+    const total = this.waves.reduce((n, w) => n + w.count, 0);
+    return total === 0 ? 0 : 1 - this.enemiesRemaining / total;
   }
 
   start(): void {
     this.clearAll();
     this.running = true;
-    this.beginWave(0);
+    this.elapsed = 0;
+    this.runtimes = this.waves.map((config) => ({
+      config, spawned: 0, spawnAcc: config.spawnIntervalMs, started: false,
+    }));
   }
 
   stop(): void { this.running = false; }
 
   update(delta: number): void {
     if (!this.running) return;
+    this.elapsed += delta * 1000;
+    this.tickSchedule();
     this.tickSpawns(delta);
     this.tickEnemies(delta);
+    this.checkVictory();
   }
 
   clearAll(): void {
-    for (const enemy of this.enemies) {
-      enemy.dispose();
-    }
+    for (const enemy of this.enemies) enemy.dispose();
     this.enemies.length = 0;
-    this.waveIndex = -1;
-    this.spawned = 0;
-    this.spawnAcc = 0;
+    this.runtimes = [];
+    this.elapsed = 0;
     this.running = false;
   }
 
-  private beginWave(index: number): void {
-    this.waveIndex = index;
-    this.spawned = 0;
-    this.spawnAcc = 0;
-    this.callbacks.onWaveStarted(this.currentWave, this.totalWaves);
+  private tickSchedule(): void {
+    this.runtimes.forEach((rt, index) => {
+      if (rt.started || this.elapsed < rt.config.startAtMs) return;
+      rt.started = true;
+      this.callbacks.onWaveStarted(index + 1, this.totalWaves);
+    });
   }
 
   private tickSpawns(delta: number): void {
-    const wave = this.waves[this.waveIndex];
-    if (!wave || this.spawned >= wave.count) {
-      return;
-    }
-    this.spawnAcc += delta * 1000;
-    while (this.spawned < wave.count && this.spawnAcc >= wave.spawnIntervalMs) {
-      this.spawnAcc -= wave.spawnIntervalMs;
-      this.spawnOne(wave);
+    for (const rt of this.runtimes) {
+      if (!rt.started || rt.spawned >= rt.config.count) continue;
+      rt.spawnAcc += delta * 1000;
+      while (rt.spawned < rt.config.count && rt.spawnAcc >= rt.config.spawnIntervalMs) {
+        rt.spawnAcc -= rt.config.spawnIntervalMs;
+        this.spawnOne(rt);
+      }
     }
   }
 
-  private spawnOne(wave: WaveConfig): void {
-    const enemy = new Enemy(Math.round(BASE_HP * wave.enemyHpMultiplier), BASE_SPEED);
+  private spawnOne(rt: WaveRuntime): void {
+    const enemy = new Enemy(Math.round(BASE_HP * rt.config.enemyHpMultiplier), BASE_SPEED);
     enemy.update(0, this.path, this.pathLength);
     this.scene.add(enemy.mesh);
     this.enemies.push(enemy);
-    this.spawned += 1;
+    rt.spawned += 1;
   }
 
   private tickEnemies(delta: number): void {
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const enemy = this.enemies[i];
-      if (!enemy) {
-        continue;
-      }
+      if (!enemy) continue;
       if (enemy.dying) {
         if (!enemy.rewarded) {
           enemy.rewarded = true;
@@ -129,21 +132,13 @@ export class WaveManager {
         this.enemies.splice(i, 1);
       }
     }
-    this.checkWaveClear();
   }
 
-  private checkWaveClear(): void {
-    const wave = this.waves[this.waveIndex];
-    if (!wave || this.spawned < wave.count || this.enemies.length > 0) {
-      return;
-    }
-    this.callbacks.onWaveCleared(this.currentWave);
-    const next = this.waveIndex + 1;
-    if (next < this.waves.length) {
-      this.beginWave(next);
-      return;
-    }
+  private checkVictory(): void {
+    const allSpawned = this.runtimes.every((rt) => rt.started && rt.spawned >= rt.config.count);
+    if (!allSpawned || this.enemies.length > 0) return;
     this.running = false;
+    this.callbacks.onWaveCleared(this.totalWaves);
     this.callbacks.onAllWavesCleared();
   }
 }

@@ -12,7 +12,7 @@ export class Screens {
   ) {
     this.menu = overlay(
       'Country Defense',
-      'Invaders march a curved road from the border to the capital. Left-click grass to build Cannon or Flak. Click a tower to upgrade. Right-drag to orbit.',
+      'Tanks march the road on a timed schedule. Left-click grass to build Cannon or Flak. Click a tower to upgrade.',
       'Start',
       handlers.onStart,
     );

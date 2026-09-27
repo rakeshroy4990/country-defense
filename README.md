@@ -24,11 +24,12 @@ Static output lands in `dist/`.
 
 ## Play
 
-1. Start the game from the title screen.
-2. Choose **Cannon** (cheap, short range) or **Flak** (pricier, longer range).
-3. Click grass — not the road — to place a tower.
-4. Click a placed tower to upgrade it.
-5. Enemies walk the border-to-capital path. Leak too many and the capital falls.
+The full base fills the window. Tanks start immediately; a new wave launches every 14 seconds.
+
+1. Choose **Cannon** (cheap, short range) or **Flak** (pricier, longer range).
+2. Click grass — not the road — to place a tower.
+3. Click a placed tower to upgrade it.
+4. Leak too many tanks and the capital falls. Esc or P pauses.
 
 ## Scripts
 
