@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import type { Enemy } from './Enemy.ts';
 
-const FLIGHT_SEC = 0.28;
+const FLIGHT_SEC = 0.16;
 
 export class Projectile {
   readonly mesh: THREE.Mesh;
@@ -9,38 +9,42 @@ export class Projectile {
   hit = false;
   private elapsed = 0;
   private readonly from: THREE.Vector3;
-  private readonly target: Enemy;
   private readonly damage: number;
+  private readonly enemy: Enemy | null;
   private readonly lastAim = new THREE.Vector3();
 
-  constructor(from: THREE.Vector3, target: Enemy, damage: number) {
+  constructor(from: THREE.Vector3, aim: THREE.Vector3, damage: number, enemy: Enemy | null) {
     this.from = from.clone();
-    this.target = target;
     this.damage = damage;
-    this.lastAim.copy(target.mesh.position).setY(1.5);
+    this.enemy = enemy;
+    this.lastAim.copy(aim);
     this.mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.14, 8, 8),
-      new THREE.MeshStandardMaterial({ color: 0x2c2c2a, roughness: 0.35, metalness: 0.7 }),
+      new THREE.CylinderGeometry(0.045, 0.07, 0.85, 6),
+      new THREE.MeshStandardMaterial({
+        color: 0xffc14a,
+        emissive: 0xff7a1a,
+        emissiveIntensity: 1.4,
+        roughness: 0.25,
+        metalness: 0.55,
+      }),
     );
     this.mesh.position.copy(this.from);
+    aimMesh(this.mesh, this.from, this.lastAim);
   }
 
   update(delta: number): void {
-    if (this.done) {
-      return;
-    }
-    if (this.target.alive) {
-      this.lastAim.copy(this.target.mesh.position).setY(1.5);
+    if (this.done) return;
+    if (this.enemy?.alive) {
+      this.lastAim.copy(this.enemy.mesh.position).setY(1.8);
     }
     this.elapsed += delta;
     const t = Math.min(1, this.elapsed / FLIGHT_SEC);
     this.mesh.position.lerpVectors(this.from, this.lastAim, t);
-    if (t < 1) {
-      return;
-    }
+    aimMesh(this.mesh, this.from, this.lastAim);
+    if (t < 1) return;
     this.done = true;
-    if (this.target.alive) {
-      this.target.takeDamage(this.damage);
+    if (this.enemy?.alive) {
+      this.enemy.takeDamage(this.damage);
       this.hit = true;
     }
   }
@@ -48,9 +52,12 @@ export class Projectile {
   dispose(): void {
     this.mesh.removeFromParent();
     this.mesh.geometry.dispose();
-    const mat = this.mesh.material;
-    if (mat instanceof THREE.Material) {
-      mat.dispose();
-    }
+    if (this.mesh.material instanceof THREE.Material) this.mesh.material.dispose();
   }
+}
+
+function aimMesh(mesh: THREE.Mesh, from: THREE.Vector3, to: THREE.Vector3): void {
+  const dir = to.clone().sub(from);
+  if (dir.lengthSq() < 0.0001) return;
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize());
 }

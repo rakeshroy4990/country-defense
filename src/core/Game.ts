@@ -60,7 +60,12 @@ export class Game {
       this.scene.camera, this.scene.renderer.domElement, terrain, this.scene.scene, this.economy,
     );
     this.placement.onSelectTower = (tower) => this.hud.setFocused(tower);
-    this.combat = new CombatSystem(this.scene.scene, () => this.sound.shoot(), (at) => this.fx.spawn(at, 0x4a4538));
+    this.combat = new CombatSystem(
+      this.scene.scene,
+      terrain.path.getPointAt(1).setY(4.2),
+      () => this.sound.shoot(),
+      (at) => this.fx.spawn(at, 0x4a4538),
+    );
     bindPause(() => this.togglePause());
     host.addEventListener('pointerdown', () => this.sound.unlock(), { once: true });
     this.beginMatch();

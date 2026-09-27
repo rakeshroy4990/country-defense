@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import type { TowerDef, TowerKind } from '../data/towers.ts';
-import { makeTurret } from '../models/turret.ts';
+import { makeTurret, turretMuzzle } from '../models/turret.ts';
 import type { Enemy } from './Enemy.ts';
 import { Projectile } from './Projectile.ts';
 
@@ -47,9 +47,10 @@ export class Tower {
       return null;
     }
     this.cooldown = this.fireRateMs;
-    const from = this.mesh.position.clone();
-    from.y += 3.1;
-    return new Projectile(from, target, this.damage);
+    this.mesh.lookAt(target.mesh.position.x, this.mesh.position.y, target.mesh.position.z);
+    const from = this.mesh.localToWorld(turretMuzzle());
+    const aim = target.mesh.position.clone().setY(1.8);
+    return new Projectile(from, aim, this.damage, target);
   }
 
   dispose(): void {

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { AttackerDef } from '../data/attackers.ts';
-import { makeTransformer } from '../models/tank.ts';
+import { makeTransformer, muzzleLocal } from '../models/transformer.ts';
+import { Projectile } from './Projectile.ts';
 
 export class Enemy {
   readonly mesh: THREE.Group;
@@ -15,6 +16,8 @@ export class Enemy {
   dying = false;
   rewarded = false;
   private deathT = 0;
+  private shootCd = 400;
+  private readonly muzzle: THREE.Vector3;
 
   constructor(def: AttackerDef) {
     this.name = def.name;
@@ -23,8 +26,9 @@ export class Enemy {
     this.maxHp = def.hp;
     this.hp = def.hp;
     this.speed = def.speed;
+    this.muzzle = muzzleLocal(def.scale);
     this.mesh = new THREE.Group();
-    this.mesh.add(makeTransformer(def.color, def.scale));
+    this.mesh.add(makeTransformer(def.color, def.scale, def.id));
   }
 
   get alive(): boolean {
@@ -42,6 +46,15 @@ export class Enemy {
     const tan = path.getTangentAt(this.progress);
     this.mesh.position.set(pos.x, 0.12, pos.z);
     this.mesh.rotation.y = Math.atan2(tan.x, tan.z);
+  }
+
+  tryFire(delta: number, capital: THREE.Vector3): Projectile | null {
+    if (!this.alive) return null;
+    this.shootCd -= delta * 1000;
+    if (this.shootCd > 0) return null;
+    this.shootCd = 2200;
+    const from = this.mesh.localToWorld(this.muzzle.clone());
+    return new Projectile(from, capital.clone().setY(4.2), 0, null);
   }
 
   takeDamage(amount: number): void {
