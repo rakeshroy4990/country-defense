@@ -28,13 +28,10 @@ export function makeAsphaltTexture(): THREE.CanvasTexture {
       ctx.fillStyle = `rgb(${n},${n},${n - 2})`;
       ctx.fillRect(Math.random() * size, Math.random() * size, 1, 1);
     }
-    ctx.strokeStyle = 'rgba(210, 190, 120, 0.22)';
-    ctx.setLineDash([10, 14]);
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(size / 2, 0);
-    ctx.lineTo(size / 2, size);
-    ctx.stroke();
+    for (let i = 0; i < 40; i++) {
+      ctx.fillStyle = `rgba(70, 62, 42, ${0.08 + Math.random() * 0.1})`;
+      ctx.fillRect(Math.random() * size, Math.random() * size, 12, 4);
+    }
   }, 18, 1);
 }
 

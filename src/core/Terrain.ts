@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { MAP_DEPTH, MAP_WIDTH, PATH_WIDTH } from '../data/constants.ts';
 import { makeBorderGate, makeCapital } from '../models/landmarks.ts';
-import { makeAsphaltTexture, makeGrassTexture } from './grassTexture.ts';
+import { makeGrassTexture } from './grassTexture.ts';
+import { makeFlatRoad } from './road.ts';
 
 export class Terrain {
   readonly group = new THREE.Group();
@@ -15,7 +16,7 @@ export class Terrain {
     this.pathLength = this.path.getLength();
     this.ground = this.makeGround();
     this.group.add(this.ground);
-    this.group.add(this.makeRoad());
+    this.group.add(makeFlatRoad(this.path, this.pathWidth));
     this.group.add(makeBorderGate(this.path.getPointAt(0)));
     this.group.add(makeCapital(this.path.getPointAt(1)));
   }
@@ -46,29 +47,6 @@ export class Terrain {
     return mesh;
   }
 
-  private makeRoad(): THREE.Group {
-    const group = new THREE.Group();
-    const mat = new THREE.MeshStandardMaterial({
-      map: makeAsphaltTexture(),
-      roughness: 0.92,
-      metalness: 0.04,
-    });
-    const geo = new THREE.BoxGeometry(1, 1, 1);
-    const samples = 70;
-    for (let i = 0; i < samples; i++) {
-      const a = this.path.getPointAt(i / samples);
-      const b = this.path.getPointAt((i + 1) / samples);
-      const mid = a.clone().lerp(b, 0.5);
-      const tan = b.clone().sub(a);
-      const slab = new THREE.Mesh(geo, mat);
-      slab.scale.set(this.pathWidth, 0.1, a.distanceTo(b) + 0.35);
-      slab.position.set(mid.x, 0.06, mid.z);
-      slab.rotation.y = Math.atan2(tan.x, tan.z);
-      slab.receiveShadow = true;
-      group.add(slab);
-    }
-    return group;
-  }
 }
 
 function buildInvasionPath(): THREE.CatmullRomCurve3 {
