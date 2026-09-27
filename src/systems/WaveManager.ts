@@ -45,10 +45,12 @@ export class WaveManager {
 
   get enemiesRemaining(): number {
     const wave = this.waves[this.waveIndex];
-    if (!wave) {
-      return 0;
-    }
-    return wave.count - this.spawned + this.enemies.length;
+    return wave ? wave.count - this.spawned + this.enemies.length : 0;
+  }
+
+  get waveProgress(): number {
+    const wave = this.waves[this.waveIndex];
+    return wave ? 1 - this.enemiesRemaining / wave.count : 0;
   }
 
   start(): void {

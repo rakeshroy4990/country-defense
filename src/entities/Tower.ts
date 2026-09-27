@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { TowerDef, TowerKind } from '../data/towers.ts';
+import { makeTurret } from '../models/turret.ts';
 import type { Enemy } from './Enemy.ts';
 import { Projectile } from './Projectile.ts';
 
@@ -21,8 +22,19 @@ export class Tower {
     this.cellKey = cellKey;
     this.mesh = new THREE.Group();
     this.mesh.position.set(x, 0, z);
-    this.mesh.add(makePlaceholder(def.color));
+    this.mesh.add(makeTurret(def.color));
     this.mesh.userData.tower = true;
+  }
+
+  upgradeCost(): number {
+    return 25 + this.level * 20;
+  }
+
+  upgrade(): void {
+    this.level += 1;
+    this.damage += 3;
+    this.range += 4;
+    this.mesh.scale.setScalar(1 + (this.level - 1) * 0.08);
   }
 
   update(delta: number, enemies: readonly Enemy[]): Projectile | null {
@@ -74,20 +86,3 @@ function nearestInRange(
   return best;
 }
 
-function makePlaceholder(color: number): THREE.Group {
-  const group = new THREE.Group();
-  const base = new THREE.Mesh(
-    new THREE.CylinderGeometry(1.5, 1.9, 1.1, 8),
-    new THREE.MeshLambertMaterial({ color }),
-  );
-  base.position.y = 0.55;
-  base.castShadow = true;
-  const barrel = new THREE.Mesh(
-    new THREE.ConeGeometry(1.15, 2.3, 8),
-    new THREE.MeshLambertMaterial({ color: 0xd8d8d8 }),
-  );
-  barrel.position.y = 2.3;
-  barrel.castShadow = true;
-  group.add(base, barrel);
-  return group;
-}

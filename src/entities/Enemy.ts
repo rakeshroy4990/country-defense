@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { ENEMY_REWARD } from '../data/constants.ts';
+import { makeTank } from '../models/tank.ts';
 
 export class Enemy {
   readonly mesh: THREE.Group;
@@ -18,7 +19,7 @@ export class Enemy {
     this.hp = hp;
     this.speed = speed;
     this.mesh = new THREE.Group();
-    this.mesh.add(makeCapsuleBody());
+    this.mesh.add(makeTank());
   }
 
   get alive(): boolean {
@@ -68,16 +69,6 @@ export class Enemy {
       disposeMaterial(obj.material);
     });
   }
-}
-
-function makeCapsuleBody(): THREE.Mesh {
-  const mesh = new THREE.Mesh(
-    new THREE.CapsuleGeometry(0.85, 1.5, 4, 8),
-    new THREE.MeshLambertMaterial({ color: 0xc23b3b }),
-  );
-  mesh.position.y = 1.6;
-  mesh.castShadow = true;
-  return mesh;
 }
 
 function disposeMaterial(material: THREE.Material | THREE.Material[]): void {

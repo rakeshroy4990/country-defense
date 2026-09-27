@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { MAP_DEPTH, MAP_WIDTH, PATH_WIDTH } from '../data/constants.ts';
+import { makeBorderGate, makeCapital } from '../models/landmarks.ts';
 import { makeGrassTexture } from './grassTexture.ts';
 
 export class Terrain {
@@ -15,8 +16,8 @@ export class Terrain {
     this.ground = this.makeGround();
     this.group.add(this.ground);
     this.group.add(this.makeRoad());
-    this.group.add(makeMarker(this.path.getPointAt(0), 0x6b3a1f, 8));
-    this.group.add(makeMarker(this.path.getPointAt(1), 0xd4b45a, 12));
+    this.group.add(makeBorderGate(this.path.getPointAt(0)));
+    this.group.add(makeCapital(this.path.getPointAt(1)));
   }
 
   isOnPath(x: number, z: number, extra = 1.5): boolean {
@@ -66,13 +67,3 @@ function buildInvasionPath(): THREE.CatmullRomCurve3 {
   );
 }
 
-function makeMarker(at: THREE.Vector3, color: number, height: number): THREE.Mesh {
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(6, height, 6),
-    new THREE.MeshLambertMaterial({ color }),
-  );
-  mesh.position.set(at.x, height / 2, at.z);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  return mesh;
-}

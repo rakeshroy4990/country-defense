@@ -7,10 +7,12 @@ export class CombatSystem {
   readonly projectiles: Projectile[] = [];
   private readonly scene: THREE.Scene;
   private readonly onShoot: () => void;
+  private readonly onImpact: (at: THREE.Vector3) => void;
 
-  constructor(scene: THREE.Scene, onShoot: () => void) {
+  constructor(scene: THREE.Scene, onShoot: () => void, onImpact: (at: THREE.Vector3) => void) {
     this.scene = scene;
     this.onShoot = onShoot;
+    this.onImpact = onImpact;
   }
 
   update(delta: number, towers: readonly Tower[], enemies: readonly Enemy[]): void {
@@ -30,6 +32,7 @@ export class CombatSystem {
       }
       shot.update(delta);
       if (shot.done) {
+        if (shot.hit) this.onImpact(shot.mesh.position.clone());
         shot.dispose();
         this.projectiles.splice(i, 1);
       }

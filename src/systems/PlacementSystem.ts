@@ -1,13 +1,15 @@
 import * as THREE from 'three';
-import { GRID_SIZE, MAP_DEPTH, MAP_WIDTH } from '../data/constants.ts';
+import type { Terrain } from '../core/Terrain.ts';
 import { TOWER_DEFS, type TowerKind } from '../data/towers.ts';
 import { Tower } from '../entities/Tower.ts';
-import type { Terrain } from '../core/Terrain.ts';
+import { makePreviewMesh } from '../models/turret.ts';
 import type { Economy } from './Economy.ts';
+import { inMap, keyOf, snap } from './grid.ts';
 
 export class PlacementSystem {
   selected: TowerKind = 'cannon';
   enabled = false;
+  onSelectTower: ((tower: Tower | null) => void) | null = null;
   readonly towers: Tower[] = [];
   private readonly occupied = new Map<string, Tower>();
   private readonly preview: THREE.Mesh;
@@ -32,10 +34,7 @@ export class PlacementSystem {
     this.terrain = terrain;
     this.scene = scene;
     this.economy = economy;
-    this.preview = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.6, 1.8, 2.4, 8),
-      new THREE.MeshLambertMaterial({ color: 0x88ff88, transparent: true, opacity: 0.4 }),
-    );
+    this.preview = makePreviewMesh();
     this.preview.visible = false;
     this.scene.add(this.preview);
     canvas.addEventListener('pointermove', this.onMove);
@@ -43,25 +42,12 @@ export class PlacementSystem {
     canvas.addEventListener('pointerup', this.onUp);
   }
 
-  towerAt(x: number, z: number): Tower | undefined {
-    return this.occupied.get(keyOf(snap(x), snap(z)));
-  }
-
   clearAll(): void {
-    for (const tower of this.towers) {
-      tower.dispose();
-    }
+    for (const tower of this.towers) tower.dispose();
     this.towers.length = 0;
     this.occupied.clear();
     this.preview.visible = false;
-  }
-
-  dispose(): void {
-    this.clearAll();
-    this.preview.removeFromParent();
-    this.canvas.removeEventListener('pointermove', this.onMove);
-    this.canvas.removeEventListener('pointerdown', this.onDown);
-    this.canvas.removeEventListener('pointerup', this.onUp);
+    this.onSelectTower?.(null);
   }
 
   private readonly onMove = (event: PointerEvent): void => {
@@ -77,10 +63,9 @@ export class PlacementSystem {
     const x = snap(hit.x);
     const z = snap(hit.z);
     this.preview.position.set(x, 1.2, z);
-    this.preview.visible = true;
-    const ok = this.canPlace(x, z);
+    this.preview.visible = !this.occupied.has(keyOf(x, z));
     const mat = this.preview.material as THREE.MeshLambertMaterial;
-    mat.color.setHex(ok ? 0x7dce8a : 0xe07060);
+    mat.color.setHex(this.canPlace(x, z) ? 0x7dce8a : 0xe07060);
   };
 
   private readonly onDown = (event: PointerEvent): void => {
@@ -94,23 +79,22 @@ export class PlacementSystem {
     }
     const dragged = Math.hypot(event.clientX - this.press.x, event.clientY - this.press.y) > 6;
     this.press = null;
-    if (dragged || !this.enabled) {
-      return;
-    }
-    this.tryPlace(event);
+    if (!dragged && this.enabled) this.tryPlace(event);
   };
 
   private tryPlace(event: PointerEvent): void {
     const hit = this.hitGround(event);
-    if (!hit) {
-      return;
-    }
+    if (!hit) return;
     const x = snap(hit.x);
     const z = snap(hit.z);
-    const def = TOWER_DEFS[this.selected];
-    if (!this.canPlace(x, z) || !this.economy.spend(def.cost)) {
+    const existing = this.occupied.get(keyOf(x, z));
+    if (existing) {
+      this.onSelectTower?.(existing);
       return;
     }
+    this.onSelectTower?.(null);
+    const def = TOWER_DEFS[this.selected];
+    if (!this.canPlace(x, z) || !this.economy.spend(def.cost)) return;
     const tower = new Tower(def, x, z, keyOf(x, z));
     this.scene.add(tower.mesh);
     this.towers.push(tower);
@@ -118,12 +102,7 @@ export class PlacementSystem {
   }
 
   private canPlace(x: number, z: number): boolean {
-    const halfW = MAP_WIDTH / 2 - GRID_SIZE;
-    const halfD = MAP_DEPTH / 2 - GRID_SIZE;
-    if (Math.abs(x) > halfW || Math.abs(z) > halfD) {
-      return false;
-    }
-    if (this.occupied.has(keyOf(x, z)) || this.terrain.isOnPath(x, z, 2)) {
+    if (!inMap(x, z) || this.occupied.has(keyOf(x, z)) || this.terrain.isOnPath(x, z, 2)) {
       return false;
     }
     return this.economy.canAfford(TOWER_DEFS[this.selected].cost);
@@ -134,15 +113,6 @@ export class PlacementSystem {
     this.pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     this.pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
     this.raycaster.setFromCamera(this.pointer, this.camera);
-    const hits = this.raycaster.intersectObject(this.terrain.ground);
-    return hits[0]?.point ?? null;
+    return this.raycaster.intersectObject(this.terrain.ground)[0]?.point ?? null;
   }
-}
-
-function snap(v: number): number {
-  return Math.round(v / GRID_SIZE) * GRID_SIZE;
-}
-
-function keyOf(x: number, z: number): string {
-  return `${x}:${z}`;
 }

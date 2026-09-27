@@ -12,7 +12,7 @@ export class Screens {
   ) {
     this.menu = overlay(
       'Country Defense',
-      'Hold the border. The invaders march a curved road toward the capital. Place Cannon or Flak on the grass — never on the road.',
+      'Invaders march a curved road from the border to the capital. Left-click grass to build Cannon or Flak. Click a tower to upgrade. Right-drag to orbit.',
       'Start',
       handlers.onStart,
     );
