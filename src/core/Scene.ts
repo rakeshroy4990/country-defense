@@ -57,6 +57,8 @@ export class GameScene {
     controls.minPolarAngle = CAMERA_MIN_POLAR;
     controls.maxPolarAngle = CAMERA_MAX_POLAR;
     controls.screenSpacePanning = false;
+    controls.mouseButtons.LEFT = THREE.MOUSE.PAN;
+    controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
     return controls;
   }
 

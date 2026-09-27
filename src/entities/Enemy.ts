@@ -10,6 +10,8 @@ export class Enemy {
   reward = ENEMY_REWARD;
   reachedCapital = false;
   dying = false;
+  rewarded = false;
+  private deathT = 0;
 
   constructor(hp: number, speed: number) {
     this.maxHp = hp;
@@ -44,6 +46,16 @@ export class Enemy {
       return;
     }
     this.hp = Math.max(0, this.hp - amount);
+    if (this.hp <= 0) {
+      this.dying = true;
+    }
+  }
+
+  updateDeath(delta: number): boolean {
+    this.deathT += delta;
+    const scale = Math.max(0, 1 - this.deathT / 0.35);
+    this.mesh.scale.setScalar(scale);
+    return this.deathT >= 0.35;
   }
 
   dispose(): void {

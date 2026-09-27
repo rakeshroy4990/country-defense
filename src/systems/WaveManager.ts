@@ -5,6 +5,7 @@ import { Enemy } from '../entities/Enemy.ts';
 export interface WaveCallbacks {
   onWaveStarted: (wave: number, total: number) => void;
   onEnemyReachedCapital: (enemy: Enemy) => void;
+  onEnemyKilled: (enemy: Enemy) => void;
   onWaveCleared: (wave: number) => void;
   onAllWavesCleared: () => void;
 }
@@ -51,7 +52,7 @@ export class WaveManager {
     if (!wave) {
       return 0;
     }
-    return wave.count - this.spawned + this.livingCount();
+    return wave.count - this.spawned + this.enemies.length;
   }
 
   start(): void {
@@ -60,14 +61,8 @@ export class WaveManager {
     this.beginWave(0);
   }
 
-  stop(): void {
-    this.running = false;
-  }
-
   update(delta: number): void {
-    if (!this.running) {
-      return;
-    }
+    if (!this.running) return;
     this.tickSpawns(delta);
     this.tickEnemies(delta);
   }
@@ -116,6 +111,17 @@ export class WaveManager {
       if (!enemy) {
         continue;
       }
+      if (enemy.dying) {
+        if (!enemy.rewarded) {
+          enemy.rewarded = true;
+          this.callbacks.onEnemyKilled(enemy);
+        }
+        if (enemy.updateDeath(delta)) {
+          enemy.dispose();
+          this.enemies.splice(i, 1);
+        }
+        continue;
+      }
       enemy.update(delta, this.path, this.pathLength);
       if (enemy.reachedCapital) {
         this.callbacks.onEnemyReachedCapital(enemy);
@@ -126,13 +132,9 @@ export class WaveManager {
     this.checkWaveClear();
   }
 
-  private livingCount(): number {
-    return this.enemies.filter((e) => e.alive || e.dying).length;
-  }
-
   private checkWaveClear(): void {
     const wave = this.waves[this.waveIndex];
-    if (!wave || this.spawned < wave.count || this.livingCount() > 0) {
+    if (!wave || this.spawned < wave.count || this.enemies.length > 0) {
       return;
     }
     this.callbacks.onWaveCleared(this.currentWave);
