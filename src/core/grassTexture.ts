@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 export function makeGrassTexture(): THREE.CanvasTexture {
   return canvasTexture(512, (ctx, size) => {
-    ctx.fillStyle = '#3a4f2e';
+    ctx.fillStyle = '#5d8f42';
     ctx.fillRect(0, 0, size, size);
     for (let i = 0; i < 9000; i++) {
       const g = 48 + Math.floor(Math.random() * 46);

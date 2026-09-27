@@ -13,6 +13,7 @@ import { Screens } from '../ui/Screens.ts';
 import { bindPause } from './bindPause.ts';
 import { addLighting } from './Lighting.ts';
 import { GameScene } from './Scene.ts';
+import { addSurroundings } from './Surroundings.ts';
 import { GameState, Phase } from './GameState.ts';
 import { Terrain } from './Terrain.ts';
 
@@ -35,6 +36,7 @@ export class Game {
     this.scene = new GameScene(host);
     const terrain = new Terrain();
     this.scene.scene.add(terrain.group);
+    addSurroundings(this.scene.scene);
     addLighting(this.scene.scene);
     this.economy = new Economy(STARTING_CURRENCY);
     this.hud = new HUD(host, (kind) => this.selectTower(kind), (t) => this.upgrade(t));
