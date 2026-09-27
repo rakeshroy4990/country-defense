@@ -1,4 +1,5 @@
 import type * as THREE from 'three';
+import type { InvasionRoute } from '../core/paths.ts';
 import { attackerById } from '../data/attackers.ts';
 import { LEVELS, type LevelConfig, type WaveRuntime } from '../data/levels.ts';
 import { Enemy } from '../entities/Enemy.ts';
@@ -23,21 +24,19 @@ export class WaveManager {
   private incoming = '';
   private runtimes: WaveRuntime[] = [];
   private readonly scene: THREE.Scene;
-  private readonly path: THREE.CatmullRomCurve3;
-  private readonly pathLength: number;
+  private readonly routes: InvasionRoute[];
   private readonly levels: LevelConfig[];
   private readonly callbacks: WaveCallbacks;
+  private lane = 0;
 
   constructor(
     scene: THREE.Scene,
-    path: THREE.CatmullRomCurve3,
-    pathLength: number,
+    routes: InvasionRoute[],
     callbacks: WaveCallbacks,
     levels: LevelConfig[] = LEVELS,
   ) {
     this.scene = scene;
-    this.path = path;
-    this.pathLength = pathLength;
+    this.routes = routes;
     this.callbacks = callbacks;
     this.levels = levels;
   }
@@ -75,7 +74,7 @@ export class WaveManager {
     this.elapsed += delta * 1000;
     this.tickSchedule();
     this.tickSpawns(delta);
-    tickEnemies(this.enemies, delta, this.path, this.pathLength, this.callbacks.onEnemyKilled, this.callbacks.onEnemyReachedCapital);
+    tickEnemies(this.enemies, delta, this.callbacks.onEnemyKilled, this.callbacks.onEnemyReachedCapital);
     this.checkLevelClear();
   }
 
@@ -88,6 +87,7 @@ export class WaveManager {
     this.levelIndex = 0;
     this.incoming = '';
     this.running = false;
+    this.lane = 0;
   }
 
   private beginLevel(index: number): void {
@@ -119,10 +119,13 @@ export class WaveManager {
       while (rt.spawned < rt.config.count && rt.spawnAcc >= rt.config.spawnIntervalMs) {
         rt.spawnAcc -= rt.config.spawnIntervalMs;
         const def = attackerById(rt.config.attackerId);
-        const enemy = new Enemy(def);
+        const route = this.routes[this.lane % this.routes.length];
+        if (!route) continue;
+        this.lane += 1;
+        const enemy = new Enemy(def, route);
         const scale = this.levels[this.levelIndex]?.speedScale ?? 1;
         enemy.speed = def.speed * scale;
-        enemy.update(0, this.path, this.pathLength);
+        enemy.update(0);
         this.scene.add(enemy.mesh);
         this.enemies.push(enemy);
         rt.spawned += 1;

@@ -2,35 +2,36 @@ import * as THREE from 'three';
 import { MAP_DEPTH, MAP_WIDTH, PATH_WIDTH } from '../data/constants.ts';
 import { makeBorderGate, makeCapital } from '../models/landmarks.ts';
 import { makeGrassTexture } from './grassTexture.ts';
+import { buildInvasionRoutes, pointOnAnyRoute, type InvasionRoute } from './paths.ts';
 import { makeFlatRoad } from './road.ts';
 
 export class Terrain {
   readonly group = new THREE.Group();
   readonly ground: THREE.Mesh;
+  readonly routes: InvasionRoute[];
   readonly path: THREE.CatmullRomCurve3;
   readonly pathWidth = PATH_WIDTH;
   readonly pathLength: number;
+  readonly capital: THREE.Vector3;
 
   constructor() {
-    this.path = buildInvasionPath();
-    this.pathLength = this.path.getLength();
+    this.routes = buildInvasionRoutes();
+    const home = this.routes[1] ?? this.routes[0];
+    if (!home) throw new Error('Missing invasion routes');
+    this.path = home.curve;
+    this.pathLength = home.length;
+    this.capital = home.curve.getPointAt(1);
     this.ground = this.makeGround();
     this.group.add(this.ground);
-    this.group.add(makeFlatRoad(this.path, this.pathWidth));
-    this.group.add(makeBorderGate(this.path.getPointAt(0)));
-    this.group.add(makeCapital(this.path.getPointAt(1)));
+    for (const route of this.routes) {
+      this.group.add(makeFlatRoad(route.curve, this.pathWidth));
+      this.group.add(makeBorderGate(route.curve.getPointAt(0)));
+    }
+    this.group.add(makeCapital(this.capital));
   }
 
   isOnPath(x: number, z: number, extra = 1.5): boolean {
-    const limit = this.pathWidth / 2 + extra;
-    const samples = 80;
-    for (let i = 0; i <= samples; i++) {
-      const p = this.path.getPointAt(i / samples);
-      if (Math.hypot(p.x - x, p.z - z) <= limit) {
-        return true;
-      }
-    }
-    return false;
+    return pointOnAnyRoute(this.routes, x, z, this.pathWidth / 2 + extra);
   }
 
   private makeGround(): THREE.Mesh {
@@ -46,22 +47,4 @@ export class Terrain {
     mesh.name = 'ground';
     return mesh;
   }
-
 }
-
-function buildInvasionPath(): THREE.CatmullRomCurve3 {
-  return new THREE.CatmullRomCurve3(
-    [
-      new THREE.Vector3(-96, 0.2, 0),
-      new THREE.Vector3(-62, 0.2, 28),
-      new THREE.Vector3(-22, 0.2, -22),
-      new THREE.Vector3(18, 0.2, 26),
-      new THREE.Vector3(58, 0.2, -18),
-      new THREE.Vector3(96, 0.2, 0),
-    ],
-    false,
-    'catmullrom',
-    0.35,
-  );
-}
-

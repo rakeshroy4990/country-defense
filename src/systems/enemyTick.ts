@@ -1,11 +1,8 @@
-import type * as THREE from 'three';
 import type { Enemy } from '../entities/Enemy.ts';
 
 export function tickEnemies(
   enemies: Enemy[],
   delta: number,
-  path: THREE.CatmullRomCurve3,
-  pathLength: number,
   onKill: (enemy: Enemy) => void,
   onLeak: (enemy: Enemy) => void,
 ): void {
@@ -23,7 +20,7 @@ export function tickEnemies(
       }
       continue;
     }
-    enemy.update(delta, path, pathLength);
+    enemy.update(delta);
     if (enemy.reachedCapital) {
       onLeak(enemy);
       enemy.dispose();

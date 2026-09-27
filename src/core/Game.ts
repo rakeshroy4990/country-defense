@@ -49,7 +49,7 @@ export class Game {
       onResume: () => this.togglePause(),
     });
     this.fx = new FxSystem(this.scene.scene);
-    this.waves = new WaveManager(this.scene.scene, terrain.path, terrain.pathLength, {
+    this.waves = new WaveManager(this.scene.scene, terrain.routes, {
       onLevelStarted: () => undefined,
       onWaveStarted: () => undefined,
       onEnemyReachedCapital: (enemy) => this.leak(enemy),
@@ -62,7 +62,7 @@ export class Game {
     this.placement.onSelectTower = (tower) => this.hud.setFocused(tower);
     this.combat = new CombatSystem(
       this.scene.scene,
-      terrain.path.getPointAt(1).setY(4.2),
+      terrain.capital.clone().setY(4.2),
       () => this.sound.shoot(),
       (at) => this.fx.spawn(at, 0x4a4538),
     );

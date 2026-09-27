@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import type { InvasionRoute } from '../core/paths.ts';
 import type { AttackerDef } from '../data/attackers.ts';
 import { makeTransformer, muzzleLocal } from '../models/transformer.ts';
 import { Projectile } from './Projectile.ts';
@@ -18,14 +19,16 @@ export class Enemy {
   private deathT = 0;
   private shootCd = 400;
   private readonly muzzle: THREE.Vector3;
+  private readonly route: InvasionRoute;
 
-  constructor(def: AttackerDef) {
+  constructor(def: AttackerDef, route: InvasionRoute) {
     this.name = def.name;
     this.kingdomDamage = def.kingdomDamage;
     this.reward = def.reward;
     this.maxHp = def.hp;
     this.hp = def.hp;
     this.speed = def.speed;
+    this.route = route;
     this.muzzle = muzzleLocal(def.scale);
     this.mesh = new THREE.Group();
     this.mesh.add(makeTransformer(def.color, def.scale, def.id));
@@ -35,15 +38,15 @@ export class Enemy {
     return this.hp > 0 && !this.reachedCapital && !this.dying;
   }
 
-  update(delta: number, path: THREE.CatmullRomCurve3, pathLength: number): void {
+  update(delta: number): void {
     if (!this.alive) return;
-    this.progress = Math.min(1, this.progress + (this.speed * delta) / pathLength);
+    this.progress = Math.min(1, this.progress + (this.speed * delta) / this.route.length);
     if (this.progress >= 1) {
       this.reachedCapital = true;
       return;
     }
-    const pos = path.getPointAt(this.progress);
-    const tan = path.getTangentAt(this.progress);
+    const pos = this.route.curve.getPointAt(this.progress);
+    const tan = this.route.curve.getTangentAt(this.progress);
     this.mesh.position.set(pos.x, 0.12, pos.z);
     this.mesh.rotation.y = Math.atan2(tan.x, tan.z);
   }

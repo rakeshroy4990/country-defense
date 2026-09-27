@@ -1,6 +1,6 @@
 export const MAP_WIDTH = 200;
 export const MAP_DEPTH = 100;
-export const PATH_WIDTH = 10;
+export const PATH_WIDTH = 7;
 export const GRID_SIZE = 5;
 
 export const STARTING_CAPITAL_HP = 20;
