@@ -7,6 +7,7 @@ import type { Economy } from './Economy.ts';
 
 export class PlacementSystem {
   selected: TowerKind = 'cannon';
+  enabled = false;
   readonly towers: Tower[] = [];
   private readonly occupied = new Map<string, Tower>();
   private readonly preview: THREE.Mesh;
@@ -64,6 +65,10 @@ export class PlacementSystem {
   }
 
   private readonly onMove = (event: PointerEvent): void => {
+    if (!this.enabled) {
+      this.preview.visible = false;
+      return;
+    }
     const hit = this.hitGround(event);
     if (!hit) {
       this.preview.visible = false;
@@ -79,10 +84,7 @@ export class PlacementSystem {
   };
 
   private readonly onDown = (event: PointerEvent): void => {
-    if (event.button !== 0) {
-      return;
-    }
-    this.press = { x: event.clientX, y: event.clientY };
+    if (event.button === 0) this.press = { x: event.clientX, y: event.clientY };
   };
 
   private readonly onUp = (event: PointerEvent): void => {
@@ -92,7 +94,7 @@ export class PlacementSystem {
     }
     const dragged = Math.hypot(event.clientX - this.press.x, event.clientY - this.press.y) > 6;
     this.press = null;
-    if (dragged) {
+    if (dragged || !this.enabled) {
       return;
     }
     this.tryPlace(event);

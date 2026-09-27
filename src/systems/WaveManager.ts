@@ -39,13 +39,9 @@ export class WaveManager {
     this.waves = waves;
   }
 
-  get currentWave(): number {
-    return Math.max(1, this.waveIndex + 1);
-  }
+  get currentWave(): number { return Math.max(1, this.waveIndex + 1); }
 
-  get totalWaves(): number {
-    return this.waves.length;
-  }
+  get totalWaves(): number { return this.waves.length; }
 
   get enemiesRemaining(): number {
     const wave = this.waves[this.waveIndex];
@@ -60,6 +56,8 @@ export class WaveManager {
     this.running = true;
     this.beginWave(0);
   }
+
+  stop(): void { this.running = false; }
 
   update(delta: number): void {
     if (!this.running) return;

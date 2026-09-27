@@ -43,8 +43,8 @@ export class HUD {
     }
   }
 
-  get rootEl(): HTMLDivElement {
-    return this.root;
+  setVisible(visible: boolean): void {
+    this.root.style.display = visible ? '' : 'none';
   }
 
   private mountButtons(): void {
