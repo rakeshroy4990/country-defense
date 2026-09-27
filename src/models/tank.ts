@@ -1,26 +1,18 @@
 import * as THREE from 'three';
-import { box } from './shapes.ts';
+import { box, std } from './shapes.ts';
 
 export function makeTank(): THREE.Group {
   const group = new THREE.Group();
-  group.add(box(1.8, 0.85, 3.2, 0xff2d2d, 0, 0.85, 0));
-  group.add(box(2.1, 0.35, 3.3, 0x4a1010, 0, 0.45, 0));
-  group.add(box(1.3, 0.7, 1.5, 0xff6a4a, 0, 1.55, 0.15));
-  const barrel = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.16, 0.2, 2.2, 8),
-    new THREE.MeshLambertMaterial({ color: 0x222222, emissive: 0x111111 }),
-  );
+  const hull = 0x4f563f;
+  const track = 0x2b2c28;
+  group.add(box(1.7, 0.72, 3.1, hull, 0, 0.82, 0, 0.82, 0.28));
+  group.add(box(2.05, 0.38, 3.15, track, 0, 0.42, 0, 0.9, 0.08));
+  group.add(box(1.15, 0.55, 1.35, 0x454a3c, 0, 1.42, 0.1, 0.7, 0.35));
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.14, 2.0, 8), std(0x2a2a28, 0.45, 0.65));
   barrel.rotation.x = Math.PI / 2;
-  barrel.position.set(0, 1.55, 1.6);
+  barrel.position.set(0, 1.42, 1.45);
   barrel.castShadow = true;
   group.add(barrel);
-  const marker = new THREE.Mesh(
-    new THREE.CircleGeometry(1.6, 16),
-    new THREE.MeshBasicMaterial({ color: 0xffee55, transparent: true, opacity: 0.45 }),
-  );
-  marker.rotation.x = -Math.PI / 2;
-  marker.position.y = 0.08;
-  group.add(marker);
-  group.scale.setScalar(1.6);
+  group.scale.setScalar(1.35);
   return group;
 }

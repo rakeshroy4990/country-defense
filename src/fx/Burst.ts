@@ -12,9 +12,9 @@ export class Burst {
     const positions = new Float32Array(COUNT * 3);
     for (let i = 0; i < COUNT; i++) {
       const vel = new THREE.Vector3(
-        (Math.random() - 0.5) * 10,
-        3 + Math.random() * 6,
-        (Math.random() - 0.5) * 10,
+        (Math.random() - 0.5) * 4,
+        0.8 + Math.random() * 2.2,
+        (Math.random() - 0.5) * 4,
       );
       this.velocities.push(vel);
       positions[i * 3] = origin.x;
@@ -25,7 +25,7 @@ export class Burst {
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     this.points = new THREE.Points(
       geo,
-      new THREE.PointsMaterial({ color, size: 0.45, transparent: true, opacity: 1 }),
+      new THREE.PointsMaterial({ color, size: 0.22, transparent: true, opacity: 0.7 }),
     );
   }
 

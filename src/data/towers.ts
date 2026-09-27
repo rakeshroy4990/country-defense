@@ -18,7 +18,7 @@ export const TOWER_DEFS: Record<TowerKind, TowerDef> = {
     range: 22,
     damage: 8,
     fireRateMs: 900,
-    color: 0x4a5d6a,
+    color: 0x4a4e48,
   },
   flak: {
     kind: 'flak',
@@ -27,7 +27,7 @@ export const TOWER_DEFS: Record<TowerKind, TowerDef> = {
     range: 32,
     damage: 4,
     fireRateMs: 380,
-    color: 0x6a8f3a,
+    color: 0x3f4538,
   },
 };
 

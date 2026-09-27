@@ -54,9 +54,8 @@ export class Enemy {
 
   updateDeath(delta: number): boolean {
     this.deathT += delta;
-    const scale = Math.max(0, 1 - this.deathT / 0.35);
-    this.mesh.scale.setScalar(scale);
-    return this.deathT >= 0.35;
+    this.mesh.position.y -= delta * 1.4;
+    return this.deathT >= 0.28;
   }
 
   dispose(): void {

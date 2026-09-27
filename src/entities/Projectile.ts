@@ -19,8 +19,8 @@ export class Projectile {
     this.damage = damage;
     this.lastAim.copy(target.mesh.position).setY(1.5);
     this.mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.28, 8, 8),
-      new THREE.MeshBasicMaterial({ color: 0xffd27a }),
+      new THREE.SphereGeometry(0.14, 8, 8),
+      new THREE.MeshStandardMaterial({ color: 0x2c2c2a, roughness: 0.35, metalness: 0.7 }),
     );
     this.mesh.position.copy(this.from);
   }

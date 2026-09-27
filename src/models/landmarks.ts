@@ -3,26 +3,21 @@ import { box, cyl } from './shapes.ts';
 
 export function makeBorderGate(at: THREE.Vector3): THREE.Group {
   const group = new THREE.Group();
-  group.add(box(1.4, 8, 1.4, 0x5a3a24, -3.2, 4, 0));
-  group.add(box(1.4, 8, 1.4, 0x5a3a24, 3.2, 4, 0));
-  group.add(box(8.2, 1.3, 1.5, 0x6b4528, 0, 8.2, 0));
-  group.add(box(0.3, 5.5, 2.2, 0x3a2a18, 0, 3.2, 0));
+  const concrete = 0x6a6860;
+  group.add(box(1.6, 7.2, 1.6, concrete, -3.4, 3.6, 0, 0.9, 0.05));
+  group.add(box(1.6, 7.2, 1.6, concrete, 3.4, 3.6, 0, 0.9, 0.05));
+  group.add(box(8.6, 1.1, 1.8, 0x5c5a54, 0, 7.5, 0, 0.85, 0.08));
+  group.add(box(0.2, 4.8, 2.4, 0x3a3a38, 0, 2.6, 0, 0.5, 0.4));
   group.position.set(at.x, 0, at.z);
   return group;
 }
 
 export function makeCapital(at: THREE.Vector3): THREE.Group {
   const group = new THREE.Group();
-  group.add(box(7, 4.2, 7, 0xcbb56a, 0, 2.1, 0));
-  group.add(box(4.2, 3.4, 4.2, 0xe0cc7a, 0, 5.8, 0));
-  const roof = new THREE.Mesh(
-    new THREE.ConeGeometry(3.2, 3.4, 5),
-    new THREE.MeshLambertMaterial({ color: 0xb33a3a }),
-  );
-  roof.position.y = 9;
-  roof.castShadow = true;
-  group.add(roof);
-  group.add(cyl(0.18, 0.18, 2.2, 0xf2e6a0, 10.8, 6));
+  group.add(box(8.2, 3.6, 7.4, 0x7a776e, 0, 1.8, 0, 0.88, 0.04));
+  group.add(box(5.4, 3.0, 5.2, 0x6e6b64, 0, 5.1, 0, 0.86, 0.05));
+  group.add(box(6.2, 0.35, 6.0, 0x4d4c48, 0, 6.7, 0, 0.7, 0.15));
+  group.add(cyl(0.16, 0.16, 2.4, 0x3f3f3c, 8.0, 8));
   group.position.set(at.x, 0, at.z);
   return group;
 }

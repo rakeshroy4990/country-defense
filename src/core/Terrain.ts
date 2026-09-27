@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { MAP_DEPTH, MAP_WIDTH, PATH_WIDTH } from '../data/constants.ts';
 import { makeBorderGate, makeCapital } from '../models/landmarks.ts';
-import { makeGrassTexture } from './grassTexture.ts';
+import { makeAsphaltTexture, makeGrassTexture } from './grassTexture.ts';
 
 export class Terrain {
   readonly group = new THREE.Group();
@@ -34,7 +34,11 @@ export class Terrain {
 
   private makeGround(): THREE.Mesh {
     const geo = new THREE.PlaneGeometry(MAP_WIDTH, MAP_DEPTH);
-    const mat = new THREE.MeshLambertMaterial({ map: makeGrassTexture() });
+    const mat = new THREE.MeshStandardMaterial({
+      map: makeGrassTexture(),
+      roughness: 0.95,
+      metalness: 0,
+    });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.rotation.x = -Math.PI / 2;
     mesh.receiveShadow = true;
@@ -44,7 +48,11 @@ export class Terrain {
 
   private makeRoad(): THREE.Group {
     const group = new THREE.Group();
-    const mat = new THREE.MeshLambertMaterial({ color: 0xd4b56a });
+    const mat = new THREE.MeshStandardMaterial({
+      map: makeAsphaltTexture(),
+      roughness: 0.92,
+      metalness: 0.04,
+    });
     const geo = new THREE.BoxGeometry(1, 1, 1);
     const samples = 70;
     for (let i = 0; i < samples; i++) {

@@ -1,13 +1,13 @@
 :root {
   color-scheme: dark;
   font-family: 'Segoe UI', system-ui, sans-serif;
-  --ink: #e8efe4;
-  --muted: #b7c4b0;
-  --panel: rgba(12, 22, 16, 0.78);
-  --line: rgba(210, 190, 120, 0.35);
-  --gold: #e4c56a;
-  --danger: #e07060;
-  --ok: #7dce8a;
+  --ink: #d8d6cf;
+  --muted: #9a9890;
+  --panel: rgba(18, 18, 16, 0.72);
+  --line: rgba(140, 136, 124, 0.35);
+  --gold: #c4c0b4;
+  --danger: #8a5a4e;
+  --ok: #6a705c;
 }
 
 html,

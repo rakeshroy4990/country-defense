@@ -64,8 +64,8 @@ export class PlacementSystem {
     const z = snap(hit.z);
     this.preview.position.set(x, 1.2, z);
     this.preview.visible = !this.occupied.has(keyOf(x, z));
-    const mat = this.preview.material as THREE.MeshLambertMaterial;
-    mat.color.setHex(this.canPlace(x, z) ? 0x7dce8a : 0xe07060);
+    const mat = this.preview.material as THREE.MeshStandardMaterial;
+    mat.color.setHex(this.canPlace(x, z) ? 0x5a6754 : 0x6a4038);
   };
 
   private readonly onDown = (event: PointerEvent): void => {

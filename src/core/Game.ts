@@ -50,7 +50,7 @@ export class Game {
       onEnemyKilled: (enemy) => {
         this.economy.earn(enemy.reward);
         this.sound.death();
-        this.fx.spawn(enemy.mesh.position, 0xff5533);
+        this.fx.spawn(enemy.mesh.position, 0x5a4e3a);
       },
       onWaveCleared: () => undefined,
       onAllWavesCleared: () => this.win(),
@@ -63,7 +63,7 @@ export class Game {
       this.economy,
     );
     this.placement.onSelectTower = (tower) => this.hud.setFocused(tower);
-    this.combat = new CombatSystem(this.scene.scene, () => this.sound.shoot(), (at) => this.fx.spawn(at, 0xffd27a));
+    this.combat = new CombatSystem(this.scene.scene, () => this.sound.shoot(), (at) => this.fx.spawn(at, 0x4a4538));
     bindPause(() => this.togglePause());
     host.addEventListener('pointerdown', () => this.sound.unlock(), { once: true });
     this.beginMatch();
