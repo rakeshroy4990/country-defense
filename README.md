@@ -24,7 +24,7 @@ Static output lands in `dist/`.
 
 ## Play
 
-Five levels of named attackers (Starscream → Megatron). Kingdom hits are listed in the damage log.
+Five levels of named attackers (Starscream → Megatron). They split across three roads to the capital. Kingdom hits are listed in the damage log.
 
 1. Choose **AK-47** or **Apache Helicopter** and click grass to build. Early levels crawl; later levels speed up.
 2. Click a placed tower to upgrade it.
