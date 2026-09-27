@@ -11,7 +11,7 @@ export function box(
 ): THREE.Mesh {
   const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(w, h, d),
-    new THREE.MeshLambertMaterial({ color }),
+    new THREE.MeshLambertMaterial({ color, emissive: color, emissiveIntensity: 0.22 }),
   );
   mesh.position.set(x, y, z);
   mesh.castShadow = true;

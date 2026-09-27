@@ -42,24 +42,36 @@ export class Terrain {
     return mesh;
   }
 
-  private makeRoad(): THREE.Mesh {
-    const geo = new THREE.TubeGeometry(this.path, 100, this.pathWidth / 2, 10, false);
-    const mat = new THREE.MeshLambertMaterial({ color: 0x8a6a3d });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.receiveShadow = true;
-    return mesh;
+  private makeRoad(): THREE.Group {
+    const group = new THREE.Group();
+    const mat = new THREE.MeshLambertMaterial({ color: 0xd4b56a });
+    const geo = new THREE.BoxGeometry(1, 1, 1);
+    const samples = 70;
+    for (let i = 0; i < samples; i++) {
+      const a = this.path.getPointAt(i / samples);
+      const b = this.path.getPointAt((i + 1) / samples);
+      const mid = a.clone().lerp(b, 0.5);
+      const tan = b.clone().sub(a);
+      const slab = new THREE.Mesh(geo, mat);
+      slab.scale.set(this.pathWidth, 0.1, a.distanceTo(b) + 0.35);
+      slab.position.set(mid.x, 0.06, mid.z);
+      slab.rotation.y = Math.atan2(tan.x, tan.z);
+      slab.receiveShadow = true;
+      group.add(slab);
+    }
+    return group;
   }
 }
 
 function buildInvasionPath(): THREE.CatmullRomCurve3 {
   return new THREE.CatmullRomCurve3(
     [
-      new THREE.Vector3(-96, 0.35, 0),
-      new THREE.Vector3(-62, 0.35, 28),
-      new THREE.Vector3(-22, 0.35, -22),
-      new THREE.Vector3(18, 0.35, 26),
-      new THREE.Vector3(58, 0.35, -18),
-      new THREE.Vector3(96, 0.35, 0),
+      new THREE.Vector3(-96, 0.2, 0),
+      new THREE.Vector3(-62, 0.2, 28),
+      new THREE.Vector3(-22, 0.2, -22),
+      new THREE.Vector3(18, 0.2, 26),
+      new THREE.Vector3(58, 0.2, -18),
+      new THREE.Vector3(96, 0.2, 0),
     ],
     false,
     'catmullrom',

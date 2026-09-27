@@ -25,8 +25,8 @@ export class HUD {
     this.root.innerHTML = `
       <div class="panel">
         <div>Wave <strong data-wave>1 / 10</strong></div>
+        <div>Tanks left <strong data-remain>0</strong></div>
         <div>Capital <strong data-hp>20</strong></div>
-        <div>Enemies <strong data-remain>0</strong></div>
         <div>Gold <strong data-gold>100</strong></div>
         <div class="wave-bar"><span data-bar></span></div>
       </div>

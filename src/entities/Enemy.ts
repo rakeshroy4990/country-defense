@@ -38,8 +38,8 @@ export class Enemy {
     const t = this.progress;
     const pos = path.getPointAt(t);
     const tan = path.getTangentAt(t);
-    this.mesh.position.copy(pos);
-    this.mesh.lookAt(pos.x + tan.x, pos.y, pos.z + tan.z);
+    this.mesh.position.set(pos.x, 0.12, pos.z);
+    this.mesh.rotation.y = Math.atan2(tan.x, tan.z);
   }
 
   takeDamage(amount: number): void {
