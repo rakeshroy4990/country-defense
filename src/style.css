@@ -129,6 +129,21 @@ button:disabled {
   background: var(--ok);
 }
 
+.damage-log {
+  min-width: 220px;
+}
+
+.damage-log ol {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.damage-log li {
+  margin: 3px 0;
+}
+
 @media (max-width: 640px) {
   .hud {
     top: 8px;

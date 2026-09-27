@@ -12,7 +12,7 @@ export class Screens {
   ) {
     this.menu = overlay(
       'Country Defense',
-      'Tanks march the road on a timed schedule. Left-click grass to build Cannon or Flak. Click a tower to upgrade.',
+      'Five levels. Starscream, Barricade, Bonecrusher, Shockwave, then Megatron. Left-click grass to build. Kingdom hits are recorded.',
       'Start',
       handlers.onStart,
     );

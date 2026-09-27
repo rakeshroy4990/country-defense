@@ -1,13 +1,19 @@
 import { TOWER_DEFS, TOWER_KINDS, type TowerKind } from '../data/towers.ts';
 import type { Tower } from '../entities/Tower.ts';
+import type { DamageRecord } from '../systems/KingdomLog.ts';
 
 export class HUD {
   private readonly root: HTMLDivElement;
-  private readonly waveEl: HTMLElement;
+  private readonly levelEl: HTMLElement;
+  private readonly nameEl: HTMLElement;
+  private readonly incomingEl: HTMLElement;
   private readonly hpEl: HTMLElement;
   private readonly remainEl: HTMLElement;
   private readonly goldEl: HTMLElement;
   private readonly barEl: HTMLElement;
+  private readonly hitsEl: HTMLElement;
+  private readonly takenEl: HTMLElement;
+  private readonly logEl: HTMLOListElement;
   private readonly upgradeBtn: HTMLButtonElement;
   private readonly onSelect: (kind: TowerKind) => void;
   private readonly onUpgrade: (tower: Tower) => void;
@@ -24,9 +30,10 @@ export class HUD {
     this.root.className = 'hud';
     this.root.innerHTML = `
       <div class="panel">
-        <div>Wave <strong data-wave>1 / 10</strong></div>
-        <div>Tanks left <strong data-remain>0</strong></div>
-        <div>Capital <strong data-hp>20</strong></div>
+        <div>Level <strong data-level>1 / 5</strong> · <span data-lname>Sky Raid</span></div>
+        <div>Incoming <strong data-incoming>Starscream</strong></div>
+        <div>Attackers left <strong data-remain>0</strong></div>
+        <div>Kingdom HP <strong data-hp>20</strong></div>
         <div>Gold <strong data-gold>100</strong></div>
         <div class="wave-bar"><span data-bar></span></div>
       </div>
@@ -34,13 +41,23 @@ export class HUD {
         <span data-build></span>
         <button type="button" data-upgrade hidden>Upgrade</button>
       </div>
+      <div class="panel damage-log">
+        <div>Kingdom damage</div>
+        <div><strong data-hits>0 hits</strong> · total <strong data-taken>0</strong></div>
+        <ol data-log></ol>
+      </div>
     `;
     host.appendChild(this.root);
-    this.waveEl = must(this.root, '[data-wave]');
-    this.hpEl = must(this.root, '[data-hp]');
+    this.levelEl = must(this.root, '[data-level]');
+    this.nameEl = must(this.root, '[data-lname]');
+    this.incomingEl = must(this.root, '[data-incoming]');
     this.remainEl = must(this.root, '[data-remain]');
+    this.hpEl = must(this.root, '[data-hp]');
     this.goldEl = must(this.root, '[data-gold]');
     this.barEl = must(this.root, '[data-bar]');
+    this.hitsEl = must(this.root, '[data-hits]');
+    this.takenEl = must(this.root, '[data-taken]');
+    this.logEl = must(this.root, '[data-log]') as HTMLOListElement;
     this.upgradeBtn = must(this.root, '[data-upgrade]') as HTMLButtonElement;
     this.upgradeBtn.addEventListener('click', () => {
       if (this.focused) this.onUpgrade(this.focused);
@@ -49,13 +66,35 @@ export class HUD {
     this.setSelected('cannon');
   }
 
-  update(wave: number, total: number, hp: number, remain: number, gold: number, progress: number): void {
-    this.waveEl.textContent = `${wave} / ${total}`;
+  update(
+    level: number,
+    total: number,
+    levelName: string,
+    incoming: string,
+    hp: number,
+    remain: number,
+    gold: number,
+    progress: number,
+  ): void {
+    this.levelEl.textContent = `${level} / ${total}`;
+    this.nameEl.textContent = levelName;
+    this.incomingEl.textContent = incoming || '—';
     this.hpEl.textContent = String(hp);
     this.remainEl.textContent = String(remain);
     this.goldEl.textContent = String(gold);
     this.barEl.style.width = `${Math.round(Math.min(1, Math.max(0, progress)) * 100)}%`;
     this.refreshUpgrade();
+  }
+
+  setDamageLog(hits: number, total: number, rows: DamageRecord[]): void {
+    this.hitsEl.textContent = `${hits} hit${hits === 1 ? '' : 's'}`;
+    this.takenEl.textContent = String(total);
+    this.logEl.replaceChildren();
+    for (const row of rows) {
+      const item = document.createElement('li');
+      item.textContent = `${row.attacker} dealt ${row.damage} · HP ${row.hpLeft}`;
+      this.logEl.appendChild(item);
+    }
   }
 
   setFocused(tower: Tower | null): void {
@@ -74,12 +113,10 @@ export class HUD {
   }
 
   private refreshUpgrade(): void {
-    if (!this.focused) {
-      this.upgradeBtn.hidden = true;
-      return;
+    this.upgradeBtn.hidden = !this.focused;
+    if (this.focused) {
+      this.upgradeBtn.textContent = `Upgrade Lv${this.focused.level + 1} · ${this.focused.upgradeCost()}g`;
     }
-    this.upgradeBtn.hidden = false;
-    this.upgradeBtn.textContent = `Upgrade Lv${this.focused.level + 1} · ${this.focused.upgradeCost()}g`;
   }
 
   private mountButtons(): void {

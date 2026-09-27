@@ -24,12 +24,11 @@ Static output lands in `dist/`.
 
 ## Play
 
-The full base fills the window. Tanks start immediately; a new wave launches every 14 seconds.
+Five levels of named attackers (Starscream → Megatron). Kingdom hits are listed in the damage log.
 
-1. Choose **Cannon** (cheap, short range) or **Flak** (pricier, longer range).
-2. Click grass — not the road — to place a tower.
-3. Click a placed tower to upgrade it.
-4. Leak too many tanks and the capital falls. Esc or P pauses.
+1. Choose **Cannon** or **Flak** and click grass to build.
+2. Click a placed tower to upgrade it.
+3. If an attacker reaches the capital, the log records their name and damage. Esc or P pauses.
 
 ## Scripts
 
